@@ -1,7 +1,8 @@
 package com.bilalsProjekt.ethereumdemo.controller;
 
 import com.bilalsProjekt.ethereumdemo.model.EthereumTransaction;
-import com.bilalsProjekt.ethereumdemo.services.EthereumTransactionService;
+import com.bilalsProjekt.ethereumdemo.services.EthereumService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,9 +29,12 @@ public class EthereumTransactionControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private EthereumTransactionService service;
+    private EthereumService service;
 
     private EthereumTransaction transaction;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
@@ -66,6 +71,22 @@ public class EthereumTransactionControllerIntegrationTest {
                 .andExpect(jsonPath("$.addressFrom").value(transaction.getAddressFrom()))
                 .andExpect(jsonPath("$.addressTo").value(transaction.getAddressTo()))
                 .andExpect(jsonPath("$.amount").value(transaction.getAmount().toString()))
+                .andExpect(jsonPath("$.transactionHash").value(transaction.getTransactionHash()));
+    }
+
+    @Test
+    public void createTransaction_whenValidInput_createsTransaction() throws Exception {
+        // Konfigurieren des Mocks, um die Transaktion zurückzugeben, wenn sendTransaction aufgerufen wird
+        given(service.sendTransaction(any(EthereumTransaction.class))).willReturn(transaction);
+
+        mockMvc.perform(post("/createTransaction")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(transaction)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(transaction.getId()))
+                .andExpect(jsonPath("$.addressFrom").value(transaction.getAddressFrom()))
+                .andExpect(jsonPath("$.addressTo").value(transaction.getAddressTo()))
+                .andExpect(jsonPath("$.amount").value(transaction.getAmount()))
                 .andExpect(jsonPath("$.transactionHash").value(transaction.getTransactionHash()));
     }
 }

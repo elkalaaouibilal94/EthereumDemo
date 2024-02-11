@@ -7,8 +7,11 @@ import java.util.Optional;
 
 public interface EthereumService {
     EthereumTransaction sendTransaction(EthereumTransaction transaction) throws Exception;
+
     EthereumTransaction saveTransaction(EthereumTransaction transaction) throws Exception;
+
     List<EthereumTransaction> getAllTransactions();
+
     Optional<EthereumTransaction> getTransactionById(Long id);
 }
 

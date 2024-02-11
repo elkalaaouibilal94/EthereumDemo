@@ -5,7 +5,7 @@ import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 @Entity
-@Table(name="EthereumTransactions")
+@Table(name = "EthereumTransactions")
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter

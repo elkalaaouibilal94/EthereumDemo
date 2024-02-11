@@ -1,7 +1,7 @@
 package com.bilalsProjekt.ethereumdemo.controller;
 
 import com.bilalsProjekt.ethereumdemo.model.EthereumTransaction;
-import com.bilalsProjekt.ethereumdemo.services.EthereumTransactionService;
+import com.bilalsProjekt.ethereumdemo.services.EthereumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,10 +13,10 @@ import java.util.List;
 @RestController
 public class EthereumTransactionController {
 
-    private final EthereumTransactionService service;
+    private final EthereumService service;
 
     @Autowired
-    public EthereumTransactionController(EthereumTransactionService service) {
+    public EthereumTransactionController(EthereumService service) {
         this.service = service;
     }
 
@@ -24,11 +24,9 @@ public class EthereumTransactionController {
     public ResponseEntity<List<EthereumTransaction>> getAllTransactions() {
         try {
             List<EthereumTransaction> txList = service.getAllTransactions();
-
             if (txList.isEmpty()) {
                 return new ResponseEntity<>(txList, HttpStatus.NO_CONTENT);
             }
-
             return new ResponseEntity<>(txList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
