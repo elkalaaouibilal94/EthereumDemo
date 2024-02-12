@@ -18,7 +18,6 @@ import java.util.Optional;
 @Service
 public class EthereumTransactionService implements EthereumTransactionServiceInterface {
 
-    @Autowired
     private final EthereumTransactionRepository repository;
     private final Web3ServiceInterface web3Service;
     private final EthereumConfig ethereumConfig;
@@ -38,12 +37,11 @@ public class EthereumTransactionService implements EthereumTransactionServiceInt
 
         BigInteger value = Convert.toWei(transaction.getAmount().toString(), Convert.Unit.ETHER).toBigInteger();
         BigInteger nonce = web3Service.getNonce(credentials.getAddress());
-        BigInteger gasLimit = BigInteger.valueOf(21_000);
+        BigInteger gasLimit = ethereumConfig.getGaslimit();
         BigInteger gasPrice = web3Service.getGasPrice();
 
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, transaction.getAddressTo(), value);
-        byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
-        String hexValue = Numeric.toHexString(signedMessage);
+        String hexValue = signMessage(rawTransaction, credentials);
 
         String transactionHash = web3Service.sendTransaction(hexValue);
         transaction.setTransactionHash(transactionHash);
@@ -54,6 +52,12 @@ public class EthereumTransactionService implements EthereumTransactionServiceInt
     @Override
     public EthereumTransactionModel saveTransaction(EthereumTransactionModel transaction) {
         return repository.save(transaction);
+    }
+
+    @Override
+    public String signMessage(RawTransaction rawTransaction, Credentials credentials) {
+        byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+        return Numeric.toHexString(signedMessage);
     }
 
     @Override
