@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @ToString
 
-public class EthereumTransaction {
+public class EthereumTransactionModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

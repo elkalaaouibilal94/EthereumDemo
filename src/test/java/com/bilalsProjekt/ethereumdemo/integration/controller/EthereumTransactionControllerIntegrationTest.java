@@ -1,8 +1,8 @@
 package com.bilalsProjekt.ethereumdemo.integration.controller;
 
 import com.bilalsProjekt.ethereumdemo.controller.EthereumTransactionController;
-import com.bilalsProjekt.ethereumdemo.model.EthereumTransaction;
-import com.bilalsProjekt.ethereumdemo.services.EthereumService;
+import com.bilalsProjekt.ethereumdemo.model.EthereumTransactionModel;
+import com.bilalsProjekt.ethereumdemo.services.EthereumTransactionServiceInterface;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,16 +30,16 @@ public class EthereumTransactionControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private EthereumService service;
+    private EthereumTransactionServiceInterface service;
 
-    private EthereumTransaction transaction;
+    private EthereumTransactionModel transaction;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        transaction = new EthereumTransaction();
+        transaction = new EthereumTransactionModel();
         transaction.setId(1L);
         transaction.setAddressFrom("0xFromAddress");
         transaction.setAddressTo("0xToAddress");
@@ -78,7 +78,7 @@ public class EthereumTransactionControllerIntegrationTest {
     @Test
     public void createTransaction_whenValidInput_createsTransaction() throws Exception {
         // Konfigurieren des Mocks, um die Transaktion zurückzugeben, wenn sendTransaction aufgerufen wird
-        given(service.sendTransaction(any(EthereumTransaction.class))).willReturn(transaction);
+        given(service.sendTransaction(any(EthereumTransactionModel.class))).willReturn(transaction);
 
         mockMvc.perform(post("/createTransaction")
                         .contentType(MediaType.APPLICATION_JSON)

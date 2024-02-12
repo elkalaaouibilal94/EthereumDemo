@@ -1,7 +1,7 @@
 package com.bilalsProjekt.ethereumdemo.unit.service;
 
 import com.bilalsProjekt.ethereumdemo.config.EthereumConfig;
-import com.bilalsProjekt.ethereumdemo.model.EthereumTransaction;
+import com.bilalsProjekt.ethereumdemo.model.EthereumTransactionModel;
 import com.bilalsProjekt.ethereumdemo.repository.EthereumTransactionRepository;
 import com.bilalsProjekt.ethereumdemo.services.EthereumTransactionService;
 import com.bilalsProjekt.ethereumdemo.services.Web3ServiceInterface;
@@ -41,7 +41,7 @@ class EthereumTransactionServiceTest {
     @Test
     void sendTransaction_success() throws Exception {
         // Arrange
-        EthereumTransaction transaction = new EthereumTransaction();
+        EthereumTransactionModel transaction = new EthereumTransactionModel();
         transaction.setAmount(1.0);
         transaction.setAddressTo("0xRecipientAddress");
 
@@ -51,10 +51,10 @@ class EthereumTransactionServiceTest {
         when(web3Service.getGasPrice()).thenReturn(BigInteger.valueOf(1000));
         when(web3Service.sendTransaction(anyString())).thenReturn("0xTransactionHash");
 
-        when(repository.save(any(EthereumTransaction.class))).thenReturn(transaction);
+        when(repository.save(any(EthereumTransactionModel.class))).thenReturn(transaction);
 
         // Act
-        EthereumTransaction result = service.sendTransaction(transaction);
+        EthereumTransactionModel result = service.sendTransaction(transaction);
 
         // Assert
         assertNotNull(result.getTransactionHash());

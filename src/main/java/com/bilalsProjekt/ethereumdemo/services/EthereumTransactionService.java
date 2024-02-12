@@ -1,7 +1,7 @@
 package com.bilalsProjekt.ethereumdemo.services;
 
 import com.bilalsProjekt.ethereumdemo.config.EthereumConfig;
-import com.bilalsProjekt.ethereumdemo.model.EthereumTransaction;
+import com.bilalsProjekt.ethereumdemo.model.EthereumTransactionModel;
 import com.bilalsProjekt.ethereumdemo.repository.EthereumTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EthereumTransactionService implements EthereumService {
+public class EthereumTransactionService implements EthereumTransactionServiceInterface {
 
     @Autowired
     private final EthereumTransactionRepository repository;
@@ -33,7 +33,7 @@ public class EthereumTransactionService implements EthereumService {
     }
 
     @Override
-    public EthereumTransaction sendTransaction(EthereumTransaction transaction) throws Exception {
+    public EthereumTransactionModel sendTransaction(EthereumTransactionModel transaction) throws Exception {
         Credentials credentials = ethereumConfig.getCredentials();
 
         BigInteger value = Convert.toWei(transaction.getAmount().toString(), Convert.Unit.ETHER).toBigInteger();
@@ -52,17 +52,17 @@ public class EthereumTransactionService implements EthereumService {
     }
 
     @Override
-    public EthereumTransaction saveTransaction(EthereumTransaction transaction) {
+    public EthereumTransactionModel saveTransaction(EthereumTransactionModel transaction) {
         return repository.save(transaction);
     }
 
     @Override
-    public List<EthereumTransaction> getAllTransactions() {
+    public List<EthereumTransactionModel> getAllTransactions() {
         return repository.findAll();
     }
 
     @Override
-    public Optional<EthereumTransaction> getTransactionById(Long id) {
+    public Optional<EthereumTransactionModel> getTransactionById(Long id) {
         return repository.findById(id);
     }
 }

@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 @Service
-public class Web3jBlockchainService implements Web3ServiceInterface {
+public class Web3jService implements Web3ServiceInterface {
 
     private final Web3j web3j;
     @Autowired
-    public Web3jBlockchainService(Web3j web3j) {
+    public Web3jService(Web3j web3j) {
         this.web3j = web3j;
     }
 
