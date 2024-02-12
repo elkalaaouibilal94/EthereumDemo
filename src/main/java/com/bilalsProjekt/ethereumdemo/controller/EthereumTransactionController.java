@@ -40,7 +40,7 @@ public class EthereumTransactionController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(value = "/createTransaction", consumes = MediaType.ALL_VALUE)
+    @PostMapping(value = "/createTransaction", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EthereumTransaction> createTransaction(@RequestBody EthereumTransaction ethereumTX) {
         try {
             EthereumTransaction savedTransaction = service.sendTransaction(ethereumTX);
