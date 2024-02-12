@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.RawTransaction;
 import org.web3j.crypto.TransactionEncoder;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
-import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 
@@ -21,15 +17,19 @@ import java.util.Optional;
 
 @Service
 public class EthereumTransactionService implements EthereumService {
+
+    @Autowired
     private final EthereumTransactionRepository repository;
-    private final Web3j web3j;
+    private final Web3ServiceInterface web3Service;
     private final EthereumConfig ethereumConfig;
 
     @Autowired
-    public EthereumTransactionService(EthereumTransactionRepository repository, EthereumConfig ethereumConfig) {
+    public EthereumTransactionService(EthereumTransactionRepository repository,
+                                      Web3ServiceInterface web3Service,
+                                      EthereumConfig ethereumConfig) {
         this.repository = repository;
+        this.web3Service = web3Service;
         this.ethereumConfig = ethereumConfig;
-        this.web3j = Web3j.build(new HttpService("https://sepolia.infura.io/v3/31b85f686ec84fc685bb652cc05508b2"));
     }
 
     @Override
@@ -37,21 +37,17 @@ public class EthereumTransactionService implements EthereumService {
         Credentials credentials = ethereumConfig.getCredentials();
 
         BigInteger value = Convert.toWei(transaction.getAmount().toString(), Convert.Unit.ETHER).toBigInteger();
-        BigInteger nonce = web3j.ethGetTransactionCount(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getTransactionCount();
+        BigInteger nonce = web3Service.getNonce(credentials.getAddress());
         BigInteger gasLimit = BigInteger.valueOf(21_000);
-        BigInteger gasPrice = web3j.ethGasPrice().send().getGasPrice();
+        BigInteger gasPrice = web3Service.getGasPrice();
 
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, transaction.getAddressTo(), value);
         byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
         String hexValue = Numeric.toHexString(signedMessage);
 
-        EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).send();
+        String transactionHash = web3Service.sendTransaction(hexValue);
+        transaction.setTransactionHash(transactionHash);
 
-        if (ethSendTransaction.hasError()) {
-            throw new RuntimeException("Fehler beim Senden der Transaktion: " + ethSendTransaction.getError().getMessage());
-        }
-
-        transaction.setTransactionHash(ethSendTransaction.getTransactionHash());
         return saveTransaction(transaction);
     }
 
