@@ -45,6 +45,7 @@ public class EthereumTransactionControllerIntegrationTest {
         transaction.setAddressTo("0xToAddress");
         transaction.setAmount(1.0); // 1 Ether
         transaction.setTransactionHash("0xTransactionHash");
+        transaction.setPrivateKey("0x1234FFF");
     }
 
     @Test

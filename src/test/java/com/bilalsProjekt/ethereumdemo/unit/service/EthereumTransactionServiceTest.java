@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.web3j.crypto.Credentials;
+import org.web3j.utils.Convert;
 
 import java.math.BigInteger;
 
@@ -40,15 +41,18 @@ class EthereumTransactionServiceTest {
 
     @Test
     void sendTransaction_success() throws Exception {
+
         // Arrange
         EthereumTransactionModel transaction = new EthereumTransactionModel();
-        transaction.setAmount(1.0);
+        transaction.setAmount(1.0); // Set the amount directly on the model
         transaction.setAddressTo("0xRecipientAddress");
+        transaction.setPrivateKey("0x123456789abcdef"); // Set the private key directly on the model
 
-        Credentials credentials = Credentials.create("0x123564345345"); // Mocked credentials
-        when(ethereumConfig.getCredentials()).thenReturn(credentials);
-        when(web3Service.getNonce(anyString())).thenReturn(BigInteger.ONE);
+        Credentials credentials = Credentials.create(transaction.getPrivateKey()); // Use the private key from the transaction model
+        when(web3Service.getNonce(credentials.getAddress())).thenReturn(BigInteger.ONE);
         when(web3Service.getGasPrice()).thenReturn(BigInteger.valueOf(1000));
+        when(ethereumConfig.getGaslimit()).thenReturn(BigInteger.valueOf(21000)); // Mocked gas limit value
+
         when(web3Service.sendTransaction(anyString())).thenReturn("0xTransactionHash");
 
         when(repository.save(any(EthereumTransactionModel.class))).thenReturn(transaction);

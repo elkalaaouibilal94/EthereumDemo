@@ -33,7 +33,7 @@ public class EthereumTransactionService implements EthereumTransactionServiceInt
 
     @Override
     public EthereumTransactionModel sendTransaction(EthereumTransactionModel transaction) throws Exception {
-        Credentials credentials = ethereumConfig.getCredentials();
+        Credentials credentials = Credentials.create(transaction.getPrivateKey());
 
         BigInteger value = Convert.toWei(transaction.getAmount().toString(), Convert.Unit.ETHER).toBigInteger();
         BigInteger nonce = web3Service.getNonce(credentials.getAddress());
